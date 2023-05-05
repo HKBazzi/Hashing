@@ -1,0 +1,64 @@
+
+import hashlib
+import tkinter as tk
+from tkinter import filedialog
+
+def file_hash(filename): 
+    hasher = hashlib.sha256() #SHA256, this is the algorithm for comparing the Hash, not the fastest out there, but should be good for our use case
+    with open(filename, 'rb') as f:
+        buf = f.read()
+        hasher.update(buf)
+    return hasher.hexdigest()
+
+def compare_files(file1, file2): #Comparing the 2 documents between eachother
+    hash1 = file_hash(file1)
+    hash2 = file_hash(file2)
+    return hash1 == hash2
+
+def select_file(entry): #Opening to ask for file name
+    file_path = filedialog.askopenfilename()
+    entry.delete(0, tk.END)
+    entry.insert(0, file_path)
+
+def compare_button_click():
+    file1 = entry_file1.get()
+    file2 = entry_file2.get()
+    if compare_files(file1, file2):
+        result_label.config(text="The files are identical") #if Hash's match
+    else:
+        result_label.config(text="The files are different")
+
+# Create the main window
+root = tk.Tk()
+root.title("File Comparison")
+
+# Create labels, entries, and buttons
+label_file1 = tk.Label(root, text="File 1:")
+entry_file1 = tk.Entry(root, width=50)
+button_file1 = tk.Button(root, text="Select File", command=lambda: select_file(entry_file1))
+
+label_file2 = tk.Label(root, text="File 2:")
+entry_file2 = tk.Entry(root, width=50)
+button_file2 = tk.Button(root, text="Select File", command=lambda: select_file(entry_file2))
+
+compare_button = tk.Button(root, text="Compare Files", command=compare_button_click)
+result_label = tk.Label(root, text="")
+
+close_button = tk.Button(root, text="Close", command=root.quit)  # Add a "Close" button
+
+
+label_file1.grid(row=0, column=0, padx=5, pady=5, sticky="e")
+entry_file1.grid(row=0, column=1, padx=5, pady=5)
+button_file1.grid(row=0, column=2, padx=5, pady=5)
+
+label_file2.grid(row=1, column=0, padx=5, pady=5, sticky="e")
+entry_file2.grid(row=1, column=1, padx=5, pady=5)
+button_file2.grid(row=1, column=2, padx=5, pady=5)
+
+compare_button.grid(row=2, column=1, padx=5, pady=10)
+result_label.grid(row=3, column=1, padx=5, pady=10)
+
+close_button.grid(row=4, column=1, padx=5, pady=10)  # Add the "Close" button to the main window
+
+# Run the main loop
+root.mainloop()
